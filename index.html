@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aplikasi Daftar Kehadiran Karyawan PT CTI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f2f2f2; }
+    .container { max-width: 800px; margin: 20px auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    iframe { width: 100%; height: 400px; border: none; border-radius: 8px; margin-bottom: 30px; }
+    form label { display: block; margin-top: 15px; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    button { background-color: #4CAF50; color: white; font-weight: bold; border: none; margin-top: 20px; }
+    #statusMessage { text-align: center; margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Aplikasi Daftar Kehadiran Karyawan PT CTI</h2>
+    <iframe src="https://www.canva.com/design/DAGsp3kgHvs/LJ_sCQWO-HQWmNB5PgkpGw/view?embed" allowfullscreen></iframe>
+    <form id="presensiForm">
+      <label>Nama: <input type="text" name="nama" required /></label>
+      <label>Tanggal: <input type="date" name="tanggal" required /></label>
+      <label>Jam: <input type="time" name="jam" required /></label>
+      <label>Kehadiran:
+        <select name="kehadiran" required>
+          <option value="Hadir">Hadir</option>
+          <option value="Izin">Izin</option>
+          <option value="Sakit">Sakit</option>
+          <option value="Libur">Libur</option>
+        </select>
+      </label>
+      <label>Catatan: <input type="text" name="catatan" /></label>
+      <button type="submit">Kirim Presensi</button>
+    </form>
+    <div id="statusMessage"></div>
+  </div>
+
+  <script>
+    document.getElementById("presensiForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((val, key) => data[key] = val);
+
+      fetch("https://script.google.com/macros/s/AKfycbxpy6bSCpJPxKf_QBq_iwAYDXOofM8LtUb5mLJ2CHuWJDw6HdB1ZY2XyCo35ymFotwxYg/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.json())
+      .then(res => {
+        const msg = document.getElementById("statusMessage");
+        if (res.status === "Sukses") {
+          msg.innerText = "✅ Presensi berhasil dikirim.";
+          msg.style.color = "green";
+          document.getElementById("presensiForm").reset();
+        } else {
+          msg.innerText = "❌ Gagal: " + res.error;
+          msg.style.color = "red";
+        }
+      })
+      .catch(err => {
+        const msg = document.getElementById("statusMessage");
+        msg.innerText = "❌ Error: " + err;
+        msg.style.color = "red";
+      });
+    });
+  </script>
+</body>
+</html>
